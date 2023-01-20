@@ -10,6 +10,9 @@ const StyledHeader = styled.header`
     font-size: 26px;   
     color: white;
     font-family: Raleway;
+
+    margin-bottom: ${props => props.marginBot};
+    margin-top: ${props => props.marginTop};
 `
 
 export default StyledHeader
