@@ -18,7 +18,7 @@ const StyledInput = styled.input`
         font-weight: 400px;
         font-size: 20px;
 
-        color: #000000;
+        color: ${props => props.equal ? "red": "#000000"};
     }
 `
 

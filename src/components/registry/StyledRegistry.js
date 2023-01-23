@@ -1,7 +1,7 @@
 import {Container, StyledDate, StyledDescription, StyledValue} from './styled'
 
 
-function StyledRegistry({ date, description, value, status }) {
+function StyledRegistry({ date, description, value, type }) {
 
     return (
         <Container>
@@ -13,7 +13,7 @@ function StyledRegistry({ date, description, value, status }) {
                     {description}
                 </StyledDescription>
             </div>
-            <StyledValue status={status === 'In' ? "green" : "red"}>
+            <StyledValue status={type === 'income' ? "green" : "red"}>
                 {value}
             </StyledValue>
         </Container>

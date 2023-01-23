@@ -1,43 +1,50 @@
 import StyledContent from "../../components/StyledContent";
 import StyledHeader from "../../components/StyledHeader"
-import styled from "styled-components";
+
 import { BiExit } from "react-icons/bi"
-import { Link } from "react-router-dom";
 import axios from "axios";
 import StyledRegistry from "../../components/registry/StyledRegistry";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {AiOutlinePlusCircle, AiOutlineMinusCircle} from "react-icons/ai"
 import StyledRegistryButton from "../../components/StyledRegistryButton";
-import {StyledLink, StyledRegistries, StyledNone, Balance, NewRegistriesContainer} from "./styled"
+import {StyledRegistries, StyledNone, Balance, NewRegistriesContainer} from "./styled"
+import { UserContext } from "../../contexts/userContext";
+import StyledIcon from "../../components/StyledIcon";
+import { useNavigate } from "react-router-dom";
 
 
 export default function HomePage() {
-    //Receber token do context
-    let registries = undefined/* [{
-        date: '30/01',
-        description: 'Roupas',
-        value: 'R$300',
-        status: 'Out'
-    }] */
+
+    const navigate = useNavigate()
+    const { user } = useContext(UserContext)
+    const [registries, setRegistries] = useState(undefined)
+
     const [balance, setBalance] = useState(0)
-    const token = ""
     const config = {
         headers: {
-            "Authorization": `Bearer ${token}`
+            "Authorization": `Bearer ${user.token}`
         }
     }
-
-    /* axios.get("", config)
-        .then(res => registries = res.data) */
-
-
+    function getRegistries(){
+        axios.get("http://localhost:5000/registries", config)
+            .then(res => {setRegistries(res.data); finalBalance(res.data)})
+            .catch(error => console.log(error))
+    }
+    function finalBalance(itens){
+        let sum = 0;
+        itens.forEach(item => item.type === "income" ? sum += Number(item.value) : sum -= Number(item.value))
+        setBalance(sum)
+    }
+    useEffect(()=>{
+        getRegistries()
+    }, [])
     return (
         <StyledContent>
             <StyledHeader Justify="space-between" marginBot="22px">
-                Olá, Fulano
-                <StyledLink>
+                Olá, {user.name}
+                <StyledIcon onClick={()=>{localStorage.removeItem("user"); navigate("/")}}>
                     <BiExit />
-                </StyledLink>
+                </StyledIcon>
             </StyledHeader>
             <StyledRegistries Justify={registries ? "" : "center"}>
                 {registries ? (
@@ -46,7 +53,7 @@ export default function HomePage() {
                             date={registry.date}
                             description={registry.description}
                             value={registry.value}
-                            status={registry.status}
+                            type={registry.type}
                         />
                     ))
                 ) : <StyledNone>Não há registros de entrada ou saída</StyledNone>}
